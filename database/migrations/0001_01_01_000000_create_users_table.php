@@ -12,11 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+            $table->id('user_id');
+            $table->string('name', 100);
+            $table->string('lastname', 100);
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('phone', 20)->nullable();
+            $table->string('province', 100)->nullable();
+            $table->string('canton', 100)->nullable();
+            $table->text('address')->nullable();
+            $table->date('birth_date')->nullable();
+            $table->enum('user_type', ['client', 'chambero', 'admin'])->default('client');
+            $table->decimal('average_rating', 3, 2)->default(0.0);
+            $table->integer('rating_count')->default(0);
+            $table->boolean('blocked_for_review')->default(false); // Block due to pending review
             $table->rememberToken();
             $table->timestamps();
         });
