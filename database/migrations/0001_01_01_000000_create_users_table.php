@@ -18,11 +18,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('phone', 20)->nullable();
-            $table->string('province', 100)->nullable();
-            $table->string('canton', 100)->nullable();
-            $table->text('address')->nullable();
-            $table->date('birth_date')->nullable();
+            $table->string('phone', 20);
+            $table->string('province', 100);
+            $table->string('canton', 100);
+            $table->text('address');
+            $table->date('birth_date');
             $table->enum('user_type', ['client', 'chambero', 'admin'])->default('client');
             $table->decimal('average_rating', 3, 2)->default(0.0);
             $table->integer('rating_count')->default(0);

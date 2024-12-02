@@ -36,16 +36,24 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'lastname' => 'required|string|max:100',
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'phone' => 'required|string|max:20',
+            'province' => 'required|string|max:100',
+            'canton' => 'required|string|max:100',
+            'address' => 'required|string',
+            'birth_date' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    if ($value && now()->diffInYears($value) > 18) {
+                        return $fail('Debes ser mayor de 18 años.');
+                    }
+                },
+            ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'phone' => 'nullable|string|max:20',
-            'province' => 'nullable|string|max:100',
-            'canton' => 'nullable|string|max:100',
-            'address' => 'nullable|string',
-            'birth_date' => 'nullable|date',
-            'user_type' => 'required|in:client,chambero,admin',
         ]);
 
+        // Create user with data from request
         $user = User::create([
             'name' => $request->name,
             'lastname' => $request->lastname,
@@ -55,14 +63,13 @@ class RegisteredUserController extends Controller
             'province' => $request->province,
             'canton' => $request->canton,
             'address' => $request->address,
-            'birth_date' => $request->birth_date,
-            'user_type' => $request->user_type,
+            'birth_date' => $request->birth_date
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('login')->with('success', __('Registration successful!'));
     }
 }

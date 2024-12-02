@@ -37,22 +37,33 @@
         <!-- Province -->
         <div class="mt-4">
             <x-input-label for="province" :value="__('Province')" />
-            <select id="province" name="province" class="block mt-1 w-full" required>
-                <option value="">Seleccione una provincia</option>
-                @foreach ($provinces as $province)
-                    <option value="{{ $province->id }}">{{ $province->name }}</option>
-                @endforeach
-            </select>
+            <x-text-input id="province" class="block mt-1 w-full" type="text" name="province" :value="old('province')"
+                required autocomplete="province" />
             <x-input-error :messages="$errors->get('province')" class="mt-2" />
         </div>
 
         <!-- Canton -->
         <div class="mt-4">
             <x-input-label for="canton" :value="__('Canton')" />
-            <select id="canton" name="canton" class="block mt-1 w-full" required>
-                <option value="">Seleccione un cantón</option>
-            </select>
+            <x-text-input id="canton" class="block mt-1 w-full" type="text" name="canton" :value="old('canton')"
+                required autocomplete="canton" />
             <x-input-error :messages="$errors->get('canton')" class="mt-2" />
+        </div>
+
+        <!-- Address -->
+        <div class="mt-4">
+            <x-input-label for="address" :value="__('Address')" />
+            <x-text-input id="address" class="block mt-1 w-full" type="text" name="address" :value="old('address')"
+                autocomplete="" />
+            <x-input-error :messages="$errors->get('address')" class="mt-2" />
+        </div>
+
+        <!-- Birth Date -->
+        <div class="mt-4">
+            <x-input-label for="birth_date" :value="__('Birth Date')" />
+            <x-date-input id="birth_date" class="block mt-1 w-full" name="birth_date" value="{{ now()->subYears(18)->format('Y-m-d') }}"
+                required />
+            <x-input-error :messages="$errors->get('birth_date')" class="mt-2" />
         </div>
 
         <!-- Password -->
@@ -82,32 +93,4 @@
             </x-primary-button>
         </div>
     </form>
-
-    <script>
-        document.getElementById('province').addEventListener('change', function() {
-                    const provinceId = this.value;
-                    const cantonSelect = document.getElementById('canton');
-
-                    // Limpiar cantones
-                    canton ``
-                    `javascript
-            cantonSelect.innerHTML = '<option value="">Seleccione un cantón</option>';
-
-            if (provinceId) {
-                fetch(` / cantones / $ {
-                        provinceId
-                    }
-                    `)
-                        .then(response => response.json())
-                        .then(data => {
-                            data.forEach(canton => {
-                                const option = document.createElement('option');
-                                option.value = canton.id;
-                                option.textContent = canton.nombre;
-                                cantonSelect.appendChild(option);
-                            });
-                        });
-                }
-            });
-    </script>
 </x-guest-layout>
