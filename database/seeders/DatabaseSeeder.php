@@ -15,5 +15,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(ProvinceSeeder::class);
         $this->call(CantonSeeder::class);
+        $this->call(TagsTableSeeder::class);
     }
 }
