@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
@@ -26,15 +30,78 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if (!$user) {
+            return redirect()->route('login')->withErrors(['message' => 'Debes estar autenticado para actualizar tu perfil.']);
         }
 
-        $request->user()->save();
+        // Check if the email already exists for another user
+        if ($request->email !== $user->email) {
+            $request->validate([
+                'email' => [
+                    'required',
+                    'string',
+                    'lowercase',
+                    'email',
+                    'max:255',
+                    Rule::unique(User::class)->ignore($user->id), // Ignore current user ID
+                ],
+            ]);
+        }
+
+        // Validate the date of birth to ensure the user is at least 18 years old
+        if ($request->birth_date) {
+            $birthDate = \Carbon\Carbon::parse($request->birth_date);
+            if ($birthDate->diffInYears(now()) < 18) {
+                return redirect()->route('profile.edit')->withErrors(['birth_date' => 'Debes ser mayor de 18 años.']);
+            }
+        }
+
+        Log::info('Attempting to store profile photo:', ['file' => $request->file('profile_photo')]);
+        if ($request->hasFile('profile_photo')) {
+            // Delete previous photo if it exists
+            if ($user->profile_photo) {
+                Log::info('Attempting to delete profile photo:', ['file' => $user->profile_photo]);
+                Storage::delete($user->profile_photo);
+            }
+
+            // Save new photo
+            $path = $request->file('profile_photo')->store('profile-photos', 'public');
+            $user->profile_photo = $path;
+            Log::info('Path to profile_photo:', ['Path' => $user->profile_photo]);
+        }
+
+        // Fill the model with validated data
+        $validatedData = $request->validated();
+
+        // Assign profile_photo before filling the model
+        $validatedData['profile_photo'] = $user->profile_photo;
+
+        $user->fill($validatedData);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        if ($user->wasChanged()) {
+            Log::info('User updated successfully:', ['user' => $user]);
+        } else {
+            Log::warning('User not updated:', ['user' => $user]);
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Show a specific user.
+     */
+    public function show($id)
+    {
+        $user = User::findOrFail($id);
+        return response()->json($user);
     }
 
     /**
