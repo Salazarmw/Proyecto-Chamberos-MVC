@@ -7,11 +7,14 @@ use App\Models\ChamberoProfile;
 use App\Models\Province;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UsersTag;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -88,7 +91,8 @@ class RegisteredUserController extends Controller
 
     public function storeChambero(Request $request)
     {
-        $request->validate([
+        // Validate input data
+        $validatedData = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'lastname' => 'required|string|max:100',
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
@@ -101,7 +105,7 @@ class RegisteredUserController extends Controller
                 'date',
                 function ($attribute, $value, $fail) {
                     if ($value && now()->diffInYears($value) > 18) {
-                        return $fail('Debes ser mayor de 18 años.');
+                        $fail('Debes ser mayor de 18 años.');
                     }
                 },
             ],
@@ -110,31 +114,55 @@ class RegisteredUserController extends Controller
             'tags.*' => 'exists:tags,id',
         ]);
 
-        // Create user with data from request
-        $user = User::create([
-            'name' => $request->name,
-            'lastname' => $request->lastname,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'phone' => $request->phone,
-            'province' => $request->province,
-            'canton' => $request->canton,
-            'address' => $request->address,
-            'birth_date' => $request->birth_date,
-            'user_type' => 'chambero'
-        ]);
+        try {
+            // Start transaction
+            DB::beginTransaction();
 
-        // Create chambero profile
-        $chamberoProfile = ChamberoProfile::create([
-            'user_id' => $user->id,
-            'profile_completed' => false,
-        ]);
+            // Create user
+            $user = User::create([
+                'name' => $validatedData['name'],
+                'lastname' => $validatedData['lastname'],
+                'email' => $validatedData['email'],
+                'password' => Hash::make($validatedData['password']),
+                'phone' => $validatedData['phone'],
+                'province' => $validatedData['province'],
+                'canton' => $validatedData['canton'],
+                'address' => $validatedData['address'],
+                'birth_date' => $validatedData['birth_date'],
+                'user_type' => 'chambero'
+            ]);
 
-        // Associate tags
-        $chamberoProfile->tags()->sync($request['tags']);
+            // Create chambero profile
+            $chamberoProfile = ChamberoProfile::create([
+                'user_id' => $user->user_id,
+                'profile_completed' => false,
+            ]);
 
-        event(new Registered($user));
+            // Associate tags with chambero profile
+            foreach ($request->tags as $tagId) {
+                UsersTag::create([
+                    'profile_id' => $chamberoProfile->id,
+                    'idTags' => $tagId,
+                ]);
+            }
 
-        return redirect()->route('login')->with('success', __('Registration successful!'));
+            // Fire registered event
+            event(new Registered($user));
+
+            // Commit transaction
+            DB::commit();
+
+            // Redirect with success message
+            return redirect()->route('login')->with('success', __('Registration successful!'));
+        } catch (\Exception $e) {
+            // Rollback transaction on error
+            DB::rollBack();
+
+            // Log error
+            Log::error('Chambero registration failed: ' . $e->getMessage());
+
+            // Redirect back with error message
+            return redirect()->back()->withErrors(__('An error occurred during registration. Please try again.'));
+        }
     }
 }
