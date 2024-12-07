@@ -14,7 +14,7 @@ class ChamberoProfileController extends Controller
     public function index()
     {
         $chamberoProfiles = ChamberoProfile::with('user')->get();
-        return view('chambero_profiles.index', compact('chamberoProfiles'));
+        return view('dashboard', compact('chamberoProfiles'));
     }
 
     /**
