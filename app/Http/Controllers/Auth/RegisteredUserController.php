@@ -92,7 +92,7 @@ class RegisteredUserController extends Controller
     public function storeChambero(Request $request)
     {
         // Validate input data
-        $validatedData = $request->validate([
+        $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'lastname' => 'required|string|max:100',
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
@@ -105,7 +105,7 @@ class RegisteredUserController extends Controller
                 'date',
                 function ($attribute, $value, $fail) {
                     if ($value && now()->diffInYears($value) > 18) {
-                        $fail('Debes ser mayor de 18 años.');
+                        return $fail('Debes ser mayor de 18 años.');
                     }
                 },
             ],
@@ -120,28 +120,29 @@ class RegisteredUserController extends Controller
 
             // Create user
             $user = User::create([
-                'name' => $validatedData['name'],
-                'lastname' => $validatedData['lastname'],
-                'email' => $validatedData['email'],
-                'password' => Hash::make($validatedData['password']),
-                'phone' => $validatedData['phone'],
-                'province' => $validatedData['province'],
-                'canton' => $validatedData['canton'],
-                'address' => $validatedData['address'],
-                'birth_date' => $validatedData['birth_date'],
+                'name' => $request->name,
+                'lastname' => $request->lastname,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'phone' => $request->phone,
+                'province' => $request->province,
+                'canton' => $request->canton,
+                'address' => $request->address,
+                'birth_date' => $request->birth_date,
                 'user_type' => 'chambero'
             ]);
 
             // Create chambero profile
             $chamberoProfile = ChamberoProfile::create([
-                'user_id' => $user->user_id,
+                'user_id' => $user->id,
                 'profile_completed' => false,
             ]);
 
             // Associate tags with chambero profile
+            Log::error('Chambero tags selected: ', ['tags' => $request->tags]);
             foreach ($request->tags as $tagId) {
                 UsersTag::create([
-                    'profile_id' => $chamberoProfile->id,
+                    'idChambero' => $user->id,
                     'idTags' => $tagId,
                 ]);
             }
