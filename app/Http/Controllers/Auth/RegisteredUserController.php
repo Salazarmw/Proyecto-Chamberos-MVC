@@ -113,7 +113,6 @@ class RegisteredUserController extends Controller
             'tags' => 'required|array|min:1',
             'tags.*' => 'exists:tags,id',
         ]);
-
         try {
             // Start transaction
             DB::beginTransaction();

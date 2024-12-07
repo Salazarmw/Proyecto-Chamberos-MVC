@@ -13,6 +13,8 @@ Route::get('/dashboard', [ChamberoProfileController::class, 'index'])->middlewar
 
 Route::get('/cantones/{province}', [LocationController::class, 'getCantones']);
 
+Route::get('/cantones/{province}', [LocationController::class, 'getCantones']);
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
