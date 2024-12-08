@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log;
 
 class ProfileUpdateRequest extends FormRequest
 {
@@ -30,6 +29,21 @@ class ProfileUpdateRequest extends FormRequest
             'address' => ['required', 'string'],
             'birth_date' => ['required', 'date'],
             'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif|max:2048'],
+        ];
+        // Tag validation for chambero users
+        if ($user->user_type == 'chambero') {
+            $rules['tags'] = ['sometimes', 'array', 'max:10'];
+            $rules['tags.*'] = ['exists:tags,id'];
+        }
+
+        return $rules;
+    }
+
+    public function messages()
+    {
+        return [
+            'tags.max' => 'Solo puedes seleccionar un máximo de 10 tags.',
+            'tags.*.exists' => 'Algunos de los tags seleccionados no son válidos.',
         ];
     }
 }

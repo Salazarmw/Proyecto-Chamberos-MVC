@@ -9,6 +9,8 @@ class UsersTag extends Model
 {
     use HasFactory;
 
+    protected $table = 'users_tags';
+
     protected $fillable = [
         'idChambero',
         'idTags'
@@ -16,17 +18,17 @@ class UsersTag extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'idChambero', 'user_id');
+        return $this->belongsTo(User::class, 'idChambero');
     }
 
     public function tag()
     {
-        return $this->belongsTo(Tag::class, 'idTags', 'id');
+        return $this->belongsTo(Tag::class, 'idTags');
     }
 
     public function userTags()
     {
-        return $this->hasMany(UsersTag::class, 'idChambero', 'idChambero')
+        return $this->hasMany(UsersTag::class, 'idChambero')
             ->with('tag');
     }
 }

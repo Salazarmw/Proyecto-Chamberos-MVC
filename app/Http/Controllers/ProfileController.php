@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,8 +21,12 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+        $tags = Tag::all();
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'tags' => $tags,
         ]);
     }
 
@@ -59,25 +64,20 @@ class ProfileController extends Controller
         }
 
         Log::info('Attempting to store profile photo:', ['file' => $request->file('profile_photo')]);
+        // Handle profile photo upload (existing logic)
         if ($request->hasFile('profile_photo')) {
             // Delete previous photo if it exists
             if ($user->profile_photo) {
-                Log::info('Attempting to delete profile photo:', ['file' => $user->profile_photo]);
                 Storage::delete($user->profile_photo);
             }
 
             // Save new photo
             $path = $request->file('profile_photo')->store('profile-photos', 'public');
             $user->profile_photo = $path;
-            Log::info('Path to profile_photo:', ['Path' => $user->profile_photo]);
         }
 
         // Fill the model with validated data
         $validatedData = $request->validated();
-
-        // Assign profile_photo before filling the model
-        $validatedData['profile_photo'] = $user->profile_photo;
-
         $user->fill($validatedData);
 
         if ($user->isDirty('email')) {
@@ -85,6 +85,17 @@ class ProfileController extends Controller
         }
 
         $user->save();
+
+        // Handle tags for chambero users
+        if ($user->user_type == 'chambero') {
+            $tags = $request->input('tags', []);
+            
+            // Validate tag selection
+            $validTags = Tag::whereIn('id', $tags)->pluck('id');
+            
+            // Sync tags, limiting to 10 tags
+            $user->tags()->sync($validTags->take(10));
+        }
 
         if ($user->wasChanged()) {
             Log::info('User updated successfully:', ['user' => $user]);
