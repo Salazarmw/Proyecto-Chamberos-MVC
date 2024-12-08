@@ -3,8 +3,8 @@
 use App\Http\Controllers\ChamberoProfileController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Canton;
 use Illuminate\Support\Facades\Route;
-
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
@@ -17,9 +17,9 @@ Route::get('/', function () {
     }
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [ChamberoProfileController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::resource('chambero_profiles', ChamberoProfileController::class);
+
 
 Route::get('/cantones/{province}', [LocationController::class, 'getCantones']);
 
