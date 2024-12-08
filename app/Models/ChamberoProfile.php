@@ -10,7 +10,6 @@ class ChamberoProfile extends Model
 {
     use HasFactory;
 
-    protected $table = 'users_tags';
     protected $primaryKey = 'profile_id';
 
     protected $fillable = [
@@ -22,7 +21,7 @@ class ChamberoProfile extends Model
     {
         return $this->belongsTo(User::class);
     }
-
+  
     public function tags()
     {
         return $this->belongsToMany(Tag::class, 'users_tags', 'idChambero', 'idTags');
