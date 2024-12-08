@@ -100,6 +100,21 @@
             <x-input-error :messages="$errors->get('birth_date')" class="mt-2" />
         </div>
 
+        <!-- Chambero Tags Section (Only for Chambero type users) -->
+        @if (auth()->user()->user_type == 'chambero')
+            <div>
+                <x-input-label for="tags" :value="__('Professional Tags')" />
+                <x-checkbox-group class="mt-2" :options="$tags->map(function ($tag) {
+                    return ['id' => $tag->id, 'description' => $tag->description];
+                })" :selected="old('tags', $user->tags->pluck('id')->toArray())" name="tags"
+                    :max="10" />
+                <x-input-error :messages="$errors->get('tags')" class="mt-2" />
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                    {{ __('Select up to 10 tags that describe your professional skills and services.') }}
+                </p>
+            </div>
+        @endif
+
         <!-- Field to upload profile photo -->
         <div>
             <x-input-label for="profile_photo" :value="__('Profile Photo')" />
