@@ -11,7 +11,7 @@ class Province extends Model
     
     protected $fillable = ['nombre'];
 
-    public function cantones()
+    public function cantons()
     {
         return $this->hasMany(Canton::class);
     }

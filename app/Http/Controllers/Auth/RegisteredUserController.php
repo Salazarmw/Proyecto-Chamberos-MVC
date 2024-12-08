@@ -7,11 +7,14 @@ use App\Models\ChamberoProfile;
 use App\Models\Province;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UsersTag;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -76,6 +79,7 @@ class RegisteredUserController extends Controller
             'province' => $request->province,
             'canton' => $request->canton,
             'address' => $request->address,
+            'birth_date' => $request->birth_date,
             'birth_date' => $request->birth_date
         ]);
 
@@ -88,6 +92,7 @@ class RegisteredUserController extends Controller
 
     public function storeChambero(Request $request)
     {
+        // Validate input data
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'lastname' => 'required|string|max:100',
@@ -109,32 +114,56 @@ class RegisteredUserController extends Controller
             'tags' => 'required|array|min:1',
             'tags.*' => 'exists:tags,id',
         ]);
+        try {
+            // Start transaction
+            DB::beginTransaction();
 
-        // Create user with data from request
-        $user = User::create([
-            'name' => $request->name,
-            'lastname' => $request->lastname,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'phone' => $request->phone,
-            'province' => $request->province,
-            'canton' => $request->canton,
-            'address' => $request->address,
-            'birth_date' => $request->birth_date,
-            'user_type' => 'chambero'
-        ]);
+            // Create user
+            $user = User::create([
+                'name' => $request->name,
+                'lastname' => $request->lastname,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'phone' => $request->phone,
+                'province' => $request->province,
+                'canton' => $request->canton,
+                'address' => $request->address,
+                'birth_date' => $request->birth_date,
+                'user_type' => 'chambero'
+            ]);
 
-        // Create chambero profile
-        $chamberoProfile = ChamberoProfile::create([
-            'user_id' => $user->id,
-            'profile_completed' => false,
-        ]);
+            // Create chambero profile
+            $chamberoProfile = ChamberoProfile::create([
+                'user_id' => $user->id,
+                'profile_completed' => false,
+            ]);
 
-        // Associate tags
-        $chamberoProfile->tags()->sync($request['tags']);
+            // Associate tags with chambero profile
+            Log::error('Chambero tags selected: ', ['tags' => $request->tags]);
+            foreach ($request->tags as $tagId) {
+                UsersTag::create([
+                    'idChambero' => $user->id,
+                    'idTags' => $tagId,
+                ]);
+            }
 
-        event(new Registered($user));
+            // Fire registered event
+            event(new Registered($user));
 
-        return redirect()->route('login')->with('success', __('Registration successful!'));
+            // Commit transaction
+            DB::commit();
+
+            // Redirect with success message
+            return redirect()->route('login')->with('success', __('Registration successful!'));
+        } catch (\Exception $e) {
+            // Rollback transaction on error
+            DB::rollBack();
+
+            // Log error
+            Log::error('Chambero registration failed: ' . $e->getMessage());
+
+            // Redirect back with error message
+            return redirect()->back()->withErrors(__('An error occurred during registration. Please try again.'));
+        }
     }
 }
