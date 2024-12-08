@@ -7,9 +7,14 @@ use Illuminate\Http\Request;
 
 class LocationController extends Controller
 {
-    public function getCantones($provinceId)
+    /**
+     * Obtener los cantones por provincia.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getCantons(Request $request)
     {
-        $cantons = Canton::where('province_id', $provinceId)->get();
-        return response()->json($cantons);
+       //Acá va el update de los dropdowns para los cantones :c
     }
 }

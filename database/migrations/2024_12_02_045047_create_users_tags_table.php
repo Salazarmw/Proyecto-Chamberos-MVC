@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('users_tags', function (Blueprint $table) {
             $table->id();
-            $table->foreign('idChambero')->references('user_id')->on('users')->onDelete('cascade');
-            $table->foreign('idTags')->references('id')->on('tags')->onDelete('cascade');
+            $table->foreignId('idChambero')->references('user_id')->on('users')->onDelete('cascade');
+            $table->foreignId('idTags')->references('id')->on('tags')->onDelete('cascade');
             $table->timestamps();
         });
     }
