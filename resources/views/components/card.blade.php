@@ -1,10 +1,12 @@
 <!-- resources/views/components/card.blade.php -->
 
-@props(['title', 'description', 'phone', 'province', 'canton', 'address'])
+@props(['title', 'description', 'phone', 'province', 'canton', 'address', 'profile_photo'])
 
-<div class="border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-md bg-white dark:bg-gray-800 max-w-xs w-full h-[350px]"> 
+<div
+    class="border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-md bg-white dark:bg-gray-800 max-w-xs w-full h-[350px]">
     <div class="flex items-center gap-4">
-        <img src="{{ asset('storage/profile-photos/PersonaPlaceHolder1(1).jpg') }}" alt="Placeholder Image" class="w-12 h-12 rounded-full object-cover">
+        <img src="{{ Storage::url($profile_photo) }}" alt="{{ __('Profile Photo') }}"
+            class="w-12 h-12 rounded-full object-cover">
         <div>
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">{{ $title }}</h2>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ $description }}</p>

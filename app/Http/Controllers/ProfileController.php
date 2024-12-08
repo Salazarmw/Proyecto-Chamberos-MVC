@@ -21,11 +21,10 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        $user = $request->user();
         $tags = Tag::all();
 
         return view('profile.edit', [
-            'user' => $user,
+            'user' => $request->user(),
             'tags' => $tags,
         ]);
     }
@@ -63,6 +62,10 @@ class ProfileController extends Controller
             }
         }
 
+        // Fill the model with validated data
+        $validatedData = $request->validated();
+        $user->fill($validatedData);
+
         Log::info('Attempting to store profile photo:', ['file' => $request->file('profile_photo')]);
         // Handle profile photo upload (existing logic)
         if ($request->hasFile('profile_photo')) {
@@ -73,12 +76,9 @@ class ProfileController extends Controller
 
             // Save new photo
             $path = $request->file('profile_photo')->store('profile-photos', 'public');
+            Log::info('Path to store profile photo:', ['file' => $path]);
             $user->profile_photo = $path;
         }
-
-        // Fill the model with validated data
-        $validatedData = $request->validated();
-        $user->fill($validatedData);
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
@@ -89,10 +89,10 @@ class ProfileController extends Controller
         // Handle tags for chambero users
         if ($user->user_type == 'chambero') {
             $tags = $request->input('tags', []);
-            
+
             // Validate tag selection
             $validTags = Tag::whereIn('id', $tags)->pluck('id');
-            
+
             // Sync tags, limiting to 10 tags
             $user->tags()->sync($validTags->take(10));
         }
