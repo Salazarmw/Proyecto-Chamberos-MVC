@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,7 +10,6 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
-    protected $primaryKey = 'user_id';
 
     /**
      * The attributes that are mass assignable.
@@ -59,5 +57,17 @@ class User extends Authenticatable
             'blocked_for_review' => 'boolean',
             'password' => 'hashed',
         ];
+    }
+
+    // Relationship for tags
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'users_tags', 'idChambero', 'idTags');
+    }
+
+    // Filter chambero users
+    public function scopeChamberos($query)
+    {
+        return $query->where('user_type', 'chambero');
     }
 }

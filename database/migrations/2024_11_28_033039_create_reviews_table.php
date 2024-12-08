@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('reviews', function (Blueprint $table) {
-            $table->id('review_id');
-            $table->foreignId('from_user_id')->constrained('users', 'user_id')->onDelete('cascade'); // User who writes the review
-            $table->foreignId('to_user_id')->constrained('users', 'user_id')->onDelete('cascade');   // User who receives the review
-            $table->foreignId('requested_job_id')->constrained('requested_jobs', 'job_id')->onDelete('cascade'); // Associated job
+            $table->id();
+            $table->foreignId('from_user_id')->constrained('users')->onDelete('cascade'); // User who writes the review
+            $table->foreignId('to_user_id')->constrained('users')->onDelete('cascade');   // User who receives the review
+            $table->foreignId('requested_job_id')->constrained('requested_jobs')->onDelete('cascade'); // Associated job
             $table->decimal('rating', 2, 1);
             $table->text('comment')->nullable();
             $table->timestamps();

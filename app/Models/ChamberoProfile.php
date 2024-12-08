@@ -10,7 +10,7 @@ class ChamberoProfile extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'profile_id';
+    protected $table = 'chambero_profiles';
 
     protected $fillable = [
         'user_id',
