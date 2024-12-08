@@ -15,9 +15,4 @@ class Tag extends Model
     protected $fillable = [
         'description',
     ];
-
-    public function chamberoProfiles()
-    {
-        return $this->belongsToMany(ChamberoProfile::class, 'chambero_profile_tag', 'tag_id', 'profile_id');
-    }
 }

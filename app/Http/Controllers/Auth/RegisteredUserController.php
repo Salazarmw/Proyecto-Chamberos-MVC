@@ -79,6 +79,7 @@ class RegisteredUserController extends Controller
             'province' => $request->province,
             'canton' => $request->canton,
             'address' => $request->address,
+            'birth_date' => $request->birth_date,
             'birth_date' => $request->birth_date
         ]);
 
