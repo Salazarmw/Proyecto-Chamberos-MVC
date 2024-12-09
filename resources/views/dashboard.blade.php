@@ -6,7 +6,7 @@
         <div class="w-1/4 p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md h-full">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Filtros</h2>
 
-            <!-- Provincias -->
+            <!-- Provinces -->
             <div class="mb-4">
                 <label for="provinceDropdown" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                     Selecciona una provincia
@@ -21,7 +21,7 @@
                 </select>
             </div>
 
-            <!-- Cantones -->
+            <!-- Cantons -->
             <div class="mb-4">
                 <label for="cantonDropdown" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                     Selecciona un cantón

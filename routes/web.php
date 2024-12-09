@@ -2,11 +2,9 @@
 
 use App\Http\Controllers\ChamberoProfileController;
 use App\Http\Controllers\LocationController;
-use App\Http\Controllers\ChamberoProfileController;
-use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Canton;
-use App\Models\Canton;
+use App\Http\Controllers\quotationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,11 +19,6 @@ Route::get('/', function () {
     }
 });
 
-Route::get('/dashboard', [ChamberoProfileController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
-Route::resource('chambero_profiles', ChamberoProfileController::class);
-
-
-Route::get('/cantones/{province}', [LocationController::class, 'getCantones']);
 
 Route::get('/cantones/{province}', [LocationController::class, 'getCantones']);
 Route::get('/dashboard', [ChamberoProfileController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
@@ -38,5 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__ . '/auth.php';
+//Route::get('/quotation', [quotationController::class, 'index'])->name('cotizaciones');
+Route::get('/quotations', [quotationController::class, 'index'])->middleware(['auth', 'verified'])->name('quotations');
+
 require __DIR__ . '/auth.php';

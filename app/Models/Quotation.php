@@ -13,6 +13,7 @@ class Quotation extends Model
 
     protected $fillable = [
         'client_id',
+        'chambero_id',
         'service_description',
         'scheduled_date',
         'price',
@@ -20,6 +21,11 @@ class Quotation extends Model
     ];
 
     public function client()
+    {
+        return $this->belongsTo(User::class, 'client_id');
+    }
+
+    public function chambero()
     {
         return $this->belongsTo(User::class, 'client_id');
     }
