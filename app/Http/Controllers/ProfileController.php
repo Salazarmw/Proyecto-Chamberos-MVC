@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Review;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UsersTag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -107,12 +109,24 @@ class ProfileController extends Controller
     }
 
     /**
-     * Show a specific user.
+     * Show a specific user profile.
      */
     public function show($id)
     {
         $user = User::findOrFail($id);
-        return response()->json($user);
+
+        // Load reviews and calculate average rating and count
+        $reviews = Review::where('to_user_id', $user->id)->with('fromUser')->get();
+        $averageRating = $reviews->avg('rating');
+        $ratingCount = $reviews->count();
+
+        // Get tags associated with the user
+        $tags = UsersTag::where('idChambero', $user->id)
+            ->with('tag') // Eager load the related tags
+            ->get()
+            ->pluck('tag.description');
+
+        return view('profile.view-profile', compact('user', 'reviews', 'averageRating', 'ratingCount', 'tags'));
     }
 
     /**

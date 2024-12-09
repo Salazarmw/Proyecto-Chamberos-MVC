@@ -73,7 +73,8 @@
                     <x-card title="{{ $user->name }}" description="{{ $user->email }}"
                         phone="{{ $user->phone ?? 'Sin teléfono' }}" province="{{ $user->province ?? 'Sin provincia' }}"
                         canton="{{ $user->canton ?? 'Sin cantón' }}" address="{{ $user->address ?? 'Sin dirección' }}"
-                        profile_photo="{{ $user->profile_photo ?? 'profile-photos/DefaultImage.jpeg' }}" />
+                        profile_photo="{{ $user->profile_photo ?? 'profile-photos/DefaultImage.jpeg' }}"
+                        user_id="{{ $user->id }}" />
                 @empty
                     <!-- No chamberos message -->
                     <p class="col-span-3 text-gray-700 dark:text-gray-300">No hay chamberos disponibles.</p>

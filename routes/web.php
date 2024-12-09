@@ -3,6 +3,7 @@
 use App\Http\Controllers\ChamberoProfileController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewController;
 use App\Models\Canton;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -32,5 +33,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
+    //Route::get('/quotations/create', [QuotationController::class, 'create'])->name('quotations.create');
+});
+
+Route::get('/reviews/{user}', [ReviewController::class, 'index']);
 
 require __DIR__ . '/auth.php';
