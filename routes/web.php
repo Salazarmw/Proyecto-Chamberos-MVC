@@ -1,5 +1,5 @@
 <?php
-
+// routes/web.php
 use App\Http\Controllers\ChamberoProfileController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProfileController;
@@ -40,8 +40,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::get('/reviews/{user}', [ReviewController::class, 'index']);
-
-//Route::get('/quotation', [quotationController::class, 'index'])->name('cotizaciones');
 Route::get('/quotations', [quotationController::class, 'index'])->middleware(['auth', 'verified'])->name('quotations');
+Route::get('/quotations/create/{chamberoId}', [quotationController::class, 'create'])->name('quotations.create');
+Route::post('/quotations', [QuotationController::class, 'store'])->name('quotations.store');
 
 require __DIR__ . '/auth.php';

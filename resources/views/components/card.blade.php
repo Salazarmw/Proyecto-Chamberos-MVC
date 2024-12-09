@@ -20,8 +20,8 @@
     </div>
     <div class="mt-4 flex space-x-2">
         <a href="{{ route('profile.show', $user_id) }}"
-        class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Ver Perfil</a>
-        <button
-            class="w-full bg-indigo-600 text-white py-2 rounded-lg cursor-pointer hover:bg-indigo-700">Cotizar</button>
+           class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Ver Perfil</a>
+           <a href="{{ route('quotations.create', ['chamberoId' => $user_id]) }}"
+            class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700">Cotizar</a>
     </div>
 </div>

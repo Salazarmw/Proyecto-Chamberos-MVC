@@ -9,7 +9,7 @@ class Quotation extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'quotation_id';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'client_id',
@@ -27,6 +27,6 @@ class Quotation extends Model
 
     public function chambero()
     {
-        return $this->belongsTo(User::class, 'client_id');
+        return $this->belongsTo(User::class, 'chambero_id');
     }
 }
