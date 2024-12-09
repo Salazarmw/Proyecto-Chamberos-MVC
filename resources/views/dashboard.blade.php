@@ -38,7 +38,8 @@
 
             <!-- Tags search bar -->
             <div class="mb-4">
-                <label for="searchJobs" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Buscar trabajos</label>
+                <label for="searchJobs" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Buscar
+                    trabajos</label>
                 <input id="searchJobs" type="text" placeholder="Escribe un trabajo..."
                     class="block w-full p-2.5 bg-white border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring focus:ring-indigo-300 dark:focus:ring-indigo-700">
             </div>
@@ -71,7 +72,9 @@
                     <!-- Dynamic card -->
                     <x-card title="{{ $user->name }}" description="{{ $user->email }}"
                         phone="{{ $user->phone ?? 'Sin teléfono' }}" province="{{ $user->province ?? 'Sin provincia' }}"
-                        canton="{{ $user->canton ?? 'Sin cantón' }}" address="{{ $user->address ?? 'Sin dirección' }}" />
+                        canton="{{ $user->canton ?? 'Sin cantón' }}" address="{{ $user->address ?? 'Sin dirección' }}"
+                        profile_photo="{{ $user->profile_photo ?? 'profile-photos/DefaultImage.jpeg' }}"
+                        user_id="{{ $user->id }}" />
                 @empty
                     <!-- No chamberos message -->
                     <p class="col-span-3 text-gray-700 dark:text-gray-300">No hay chamberos disponibles.</p>

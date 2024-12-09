@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Review;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UsersTag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,11 +23,10 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        $user = $request->user();
         $tags = Tag::all();
 
         return view('profile.edit', [
-            'user' => $user,
+            'user' => $request->user(),
             'tags' => $tags,
         ]);
     }
@@ -63,6 +64,10 @@ class ProfileController extends Controller
             }
         }
 
+        // Fill the model with validated data
+        $validatedData = $request->validated();
+        $user->fill($validatedData);
+
         Log::info('Attempting to store profile photo:', ['file' => $request->file('profile_photo')]);
         // Handle profile photo upload (existing logic)
         if ($request->hasFile('profile_photo')) {
@@ -73,12 +78,9 @@ class ProfileController extends Controller
 
             // Save new photo
             $path = $request->file('profile_photo')->store('profile-photos', 'public');
+            Log::info('Path to store profile photo:', ['file' => $path]);
             $user->profile_photo = $path;
         }
-
-        // Fill the model with validated data
-        $validatedData = $request->validated();
-        $user->fill($validatedData);
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
@@ -89,10 +91,10 @@ class ProfileController extends Controller
         // Handle tags for chambero users
         if ($user->user_type == 'chambero') {
             $tags = $request->input('tags', []);
-            
+
             // Validate tag selection
             $validTags = Tag::whereIn('id', $tags)->pluck('id');
-            
+
             // Sync tags, limiting to 10 tags
             $user->tags()->sync($validTags->take(10));
         }
@@ -107,12 +109,24 @@ class ProfileController extends Controller
     }
 
     /**
-     * Show a specific user.
+     * Show a specific user profile.
      */
     public function show($id)
     {
         $user = User::findOrFail($id);
-        return response()->json($user);
+
+        // Load reviews and calculate average rating and count
+        $reviews = Review::where('to_user_id', $user->id)->with('fromUser')->get();
+        $averageRating = $reviews->avg('rating');
+        $ratingCount = $reviews->count();
+
+        // Get tags associated with the user
+        $tags = UsersTag::where('idChambero', $user->id)
+            ->with('tag') // Eager load the related tags
+            ->get()
+            ->pluck('tag.description');
+
+        return view('profile.view-profile', compact('user', 'reviews', 'averageRating', 'ratingCount', 'tags'));
     }
 
     /**

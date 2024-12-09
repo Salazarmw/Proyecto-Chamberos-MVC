@@ -3,6 +3,7 @@
 use App\Http\Controllers\ChamberoProfileController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewController;
 use App\Models\Canton;
 use App\Http\Controllers\quotationController;
 use Illuminate\Support\Facades\Route;
@@ -25,11 +26,20 @@ Route::get('/dashboard', [ChamberoProfileController::class, 'index'])->middlewar
 Route::resource('chambero_profiles', ChamberoProfileController::class);
 
 
-Route::middleware('auth')->group(function () {
+Route::get('/cantones/{province}', [LocationController::class, 'getCantones']);
+
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
+    //Route::get('/quotations/create', [QuotationController::class, 'create'])->name('quotations.create');
+});
+
+Route::get('/reviews/{user}', [ReviewController::class, 'index']);
 
 //Route::get('/quotation', [quotationController::class, 'index'])->name('cotizaciones');
 Route::get('/quotations', [quotationController::class, 'index'])->middleware(['auth', 'verified'])->name('quotations');
