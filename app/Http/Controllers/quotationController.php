@@ -6,13 +6,17 @@ use App\Models\Quotation;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+
 
 class quotationController extends Controller
 {
     public function index()
-    {
-        return view('quotations.index');
-    }
+{
+    $userId = Auth::id(); // Obtener ID del usuario autenticado
+    $quotations = Quotation::where('client_id', $userId)->get(); // Obtener cotizaciones del usuario
+    return view('quotations.index', compact('quotations'));
+}
 
     public function create(Request $request, $chamberoId)
     {
