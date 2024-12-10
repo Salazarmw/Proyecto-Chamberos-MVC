@@ -114,14 +114,14 @@ class quotationController extends Controller
         try {
             $quotation = Quotation::findOrFail($id);
 
-            // Actualiza los campos de la cotización
+            // Solo actualiza precio, fecha y status
             $quotation->price = $validatedData['price'];
             $quotation->scheduled_date = $validatedData['scheduled_date'];
             $quotation->status = 'offer'; // Cambia el estado a 'offer'
 
             $quotation->save();
 
-            return redirect()->route('dashboard')->with('success', 'Contraoferta enviada con éxito.');
+            return redirect()->route('quotations.index')->with('success', 'Contraoferta enviada con éxito.');
         } catch (\Exception $e) {
             return back()->withErrors(['msg' => 'Error al enviar la contraoferta: ' . $e->getMessage()]);
         }

@@ -109,24 +109,30 @@
 
     <script>
         async function handleAction(action, quotationId) {
-            try {
-                const response = await fetch(`/quotations/${quotationId}/${action}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    },
-                });
+    if (action === 'counteroffer') {
+        // Redirect to the counteroffer page instead of using fetch
+        window.location.href = `/quotations/${quotationId}/counteroffer`;
+        return;
+    }
 
-                if (response.ok) {
-                    location.reload();
-                } else {
-                    alert('Ocurrió un error. Intente nuevamente.');
-                }
-            } catch (error) {
-                console.error(error);
-                alert('Error de red. Verifique su conexión.');
-            }
+    try {
+        const response = await fetch(`/quotations/${quotationId}/${action}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            },
+        });
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert('Ocurrió un error. Intente nuevamente.');
         }
+    } catch (error) {
+        console.error(error);
+        alert('Error de red. Verifique su conexión.');
+    }
+}
     </script>
 @endsection

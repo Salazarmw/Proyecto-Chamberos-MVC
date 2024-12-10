@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('quotations')" :active="request()->routeIs('quotations')">
                         {{ __('Cotizaciones') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('jobs')" :active="request()->routeIs('jobs')">
+                        {{ __('Trabajos') }}
+                    </x-nav-link>
                 </div>
             </div>
 

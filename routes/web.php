@@ -1,6 +1,7 @@
 <?php
 // routes/web.php
 use App\Http\Controllers\ChamberoProfileController;
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
@@ -51,6 +52,11 @@ Route::put('/quotations/{id}/counteroffer', [quotationController::class, 'update
 Route::get('/quotations/{id}/counteroffer', function ($id) {
     $quotation = Quotation::findOrFail($id);
     return view('quotations.counteroffer', compact('quotation'));
-})->name('quotations.counteroffer');
+})->name('quotations.counteroffer.view');
+
+
+Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
+Route::post('/jobs/{id}/update', [JobController::class, 'updateJobStatus']);
+
 
 require __DIR__ . '/auth.php';

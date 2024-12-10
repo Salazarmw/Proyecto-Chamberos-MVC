@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('quotation_id')->constrained('quotations')->onDelete('cascade');
             $table->enum('status', ['failed', 'in_progress', 'completed'])->default('in_progress');
+            $table->enum('client_ok', ['success', 'failed', 'in_progress'])->default('in_progress');
+            $table->enum('chambero_ok', ['success', 'failed', 'in_progress'])->default('in_progress');
             $table->timestamps();
         });
     }
