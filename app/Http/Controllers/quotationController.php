@@ -14,14 +14,14 @@ class quotationController extends Controller
 {
     public function index()
     {
-        $user = Auth::user(); // Obtener el usuario autenticado
+        $user = Auth::user(); 
         $quotations = [];
 
         if ($user->user_type === 'client') {
-            // Si el usuario es cliente, obtener cotizaciones donde él es el cliente
+
             $quotations = Quotation::where('client_id', $user->id)->get();
         } elseif ($user->user_type === 'chambero') {
-            // Si el usuario es chambero, obtener cotizaciones donde él es el chambero
+
             $quotations = Quotation::where('chambero_id', $user->id)->get();
         }
 
@@ -47,7 +47,7 @@ class quotationController extends Controller
             'chambero_id' => 'required|exists:users,id',
             'service_description' => 'required|string|max:1000',
             'scheduled_date' => 'required|date|after_or_equal:today',
-            'price' => 'required|string', // Cambiado a string para permitir comas
+            'price' => 'required|string', 
         ]);
 
         try {
@@ -58,17 +58,17 @@ class quotationController extends Controller
             $quotation->service_description = $request->input('service_description');
             $quotation->scheduled_date = $request->input('scheduled_date');
 
-            // delete the ","s and make the numbers decimals 10,2
+
             $price = str_replace(',', '', $request->input('price'));
             $quotation->price = floatval($price);
 
             $quotation->status = 'pending';
 
-            // save quote
+
             $quotation->save();
 
             // Redirect with succesfull message 
-            return redirect()->route('quotations.index')->with('success', 'Cotización enviada correctamente');
+            return redirect()->route('dashboard')->with('success', 'Cotización enviada correctamente');
         } catch (\Exception $e) {
 
             Log::error('Error al guardar la cotización: ' . $e->getMessage());
@@ -82,15 +82,15 @@ class quotationController extends Controller
     {
         $quotation = Quotation::findOrFail($id);
 
-        // Cambiar el estado de la cotización a 'accepted'
+
         $quotation->status = 'accepted';
         $quotation->save();
 
-        // Crear un nuevo "job" asociado a la cotización aceptada
+
         $job = new Job();
-        $job->quotation_id = $quotation->id;  // Asocia el job con la cotización
-        $job->status = 'in_progress';  // El job se establece inicialmente como 'in_progress'
-        $job->save();  // Guarda el job
+        $job->quotation_id = $quotation->id;  
+        $job->status = 'in_progress';  
+        $job->save();  
 
         return response()->json(['message' => 'Cotización aceptada y Job creado con éxito.']);
     }
@@ -98,7 +98,7 @@ class quotationController extends Controller
     public function reject($id)
     {
         $quotation = Quotation::findOrFail($id);
-        $quotation->status = 'rejected'; // Cambia el estado a 'rejected'
+        $quotation->status = 'rejected'; 
         $quotation->save();
 
         return response()->json(['message' => 'Cotización rechazada con éxito.']);
@@ -114,14 +114,14 @@ class quotationController extends Controller
         try {
             $quotation = Quotation::findOrFail($id);
 
-            // Solo actualiza precio, fecha y status
+
             $quotation->price = $validatedData['price'];
             $quotation->scheduled_date = $validatedData['scheduled_date'];
-            $quotation->status = 'offer'; // Cambia el estado a 'offer'
+            $quotation->status = 'offer';
 
             $quotation->save();
 
-            return redirect()->route('quotations.index')->with('success', 'Contraoferta enviada con éxito.');
+            return redirect()->route('dashboard')->with('success', 'Contraoferta enviada con éxito.');
         } catch (\Exception $e) {
             return back()->withErrors(['msg' => 'Error al enviar la contraoferta: ' . $e->getMessage()]);
         }
