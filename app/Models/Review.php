@@ -8,10 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Review extends Model
 {
     use HasFactory;
-    
-    protected $table = 'reviews';
-    protected $primaryKey = 'review_id';
 
+    protected $table = 'reviews';
+    
     protected $fillable = [
         'from_user_id',
         'to_user_id',
@@ -22,16 +21,16 @@ class Review extends Model
 
     public function fromUser()
     {
-        return $this->belongsTo(User::class, 'from_user_id', 'user_id');
+        return $this->belongsTo(User::class, 'from_user_id');
     }
 
     public function toUser()
     {
-        return $this->belongsTo(User::class, 'to_user_id', 'user_id');
+        return $this->belongsTo(User::class, 'to_user_id');
     }
 
     public function requestedJob()
     {
-        return $this->belongsTo(RequestedJob::class, 'requested_job_id', 'job_id');
+        return $this->belongsTo(Job::class, 'requested_job_id');
     }
 }

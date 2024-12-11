@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Job;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +13,7 @@ class JobController extends Controller
     public function index(Request $request)
     {
         // Obtener el usuario actual
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::id());
 
         // Obtener trabajos basados en el quotation_id del usuario
         $jobs = Job::whereHas('quotation', function ($query) use ($user) {
@@ -35,11 +36,11 @@ class JobController extends Controller
     {
         // Validar la acción entrante
         $validated = $request->validate([
-            'action' => 'required|in:success,failed', // Las acciones solo pueden ser 'success' o 'failed'
+            'action' => 'required|in:success,failed',
         ]);
 
         // Obtener el usuario autenticado
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::id());
 
         // Buscar el trabajo verificando que esté relacionado con el usuario
         $job = Job::whereHas('quotation', function ($query) use ($user) {
@@ -55,8 +56,20 @@ class JobController extends Controller
         // Actualizar la columna correspondiente según el tipo de usuario
         if ($user->user_type === 'client') {
             $job->client_ok = $validated['action'];
+            if ($validated['action'] === 'success') {
+                // Actualizar el estado de blocked_for_review
+                $user->blocked_for_review = $job->id;
+
+                $user->save();
+            }
         } elseif ($user->user_type === 'chambero') {
             $job->chambero_ok = $validated['action'];
+            if ($validated['action'] === 'success') {
+                // Actualizar el estado de blocked_for_review
+                $user->blocked_for_review = $job->id;
+
+                $user->save();
+            }
         } else {
             return response()->json(['error' => 'Tipo de usuario no autorizado'], 403);
         }
