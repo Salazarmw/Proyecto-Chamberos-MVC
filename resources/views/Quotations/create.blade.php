@@ -71,6 +71,6 @@
     function formatMoney(input) {
         let value = input.value.replace(/[^0-9]/g, ''); // Only numbers
         value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // make big numbers have a ","
-        input.value = value; 
+        input.value = value;
     }
 </script>

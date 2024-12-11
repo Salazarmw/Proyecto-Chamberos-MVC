@@ -23,8 +23,8 @@
             <input type="date" id="scheduled_date" name="scheduled_date" value="{{ $quotation->scheduled_date }}" class="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 dark:bg-gray-700 dark:text-gray-200" required>
         </div>
 
-        <div class="flex justify-between">
-            <a href="{{ route('dashboard') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        <div class="flex">
+            <a href="{{ route('dashboard') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                 Cancelar
             </a>
             <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">

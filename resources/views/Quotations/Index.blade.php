@@ -6,7 +6,7 @@
     <div class="container mx-auto p-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Cotizaciones</h1>
         <div class="flex gap-6">
-            <!-- Filtros -->
+            <!-- Filters -->
             <div class="w-1/4 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
                 <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Filtros</h2>
                 <form id="filters-form">
@@ -33,7 +33,7 @@
                 </form>
             </div>
 
-            <!-- Tabla de Cotizaciones -->
+            <!-- Quotations table -->
             <div class="w-3/4 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
                 <table class="table-auto w-full border-collapse border border-gray-300 dark:border-gray-700">
                     <thead>
@@ -109,30 +109,29 @@
 
     <script>
         async function handleAction(action, quotationId) {
-    if (action === 'counteroffer') {
-        // Redirect to the counteroffer page instead of using fetch
-        window.location.href = `/quotations/${quotationId}/counteroffer`;
-        return;
-    }
+            if (action === 'counteroffer') {
+                window.location.href = `/quotations/${quotationId}/counteroffer`;
+                return;
+            }
 
-    try {
-        const response = await fetch(`/quotations/${quotationId}/${action}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            },
-        });
+            try {
+                const response = await fetch(`/quotations/${quotationId}/${action}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                });
 
-        if (response.ok) {
-            location.reload();
-        } else {
-            alert('Ocurrió un error. Intente nuevamente.');
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Ocurrió un error. Intente nuevamente.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error de red. Verifique su conexión.');
+            }
         }
-    } catch (error) {
-        console.error(error);
-        alert('Error de red. Verifique su conexión.');
-    }
-}
     </script>
 @endsection
