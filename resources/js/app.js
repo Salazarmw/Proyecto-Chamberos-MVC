@@ -1,29 +1,45 @@
 import "./bootstrap";
-
 import Alpine from "alpinejs";
 
 window.Alpine = Alpine;
-
 Alpine.start();
 
-document.getElementById("province").addEventListener("change", function () {
-    const provinceId = this.value;
-    const cantonSelect = document.getElementById("canton");
+document.addEventListener("DOMContentLoaded", () => {
+    window.updateSelectedProvince = function (provinceId, provinceName) {
+        // Check if province dropdown exists
+        const provinceDropdown = document.getElementById("provinceDropdown");
+        if (!provinceDropdown) return;
 
-    // Clear cantons
-    cantonSelect.innerHTML = '<option value="">Seleccione un cantón</option>';
+        // Update the province dropdown display
+        provinceDropdown.querySelector("div").innerText = provinceName;
 
-    if (provinceId) {
-        fetch(`/cantones/${provinceId}`)
+        // Clear canton dropdown
+        const cantonDropdown = document.getElementById("cantonDropdown");
+        cantonDropdown.querySelector("div").innerText = "Select Canton";
+        const cantonList = cantonDropdown.querySelector("[id='cantonList']");
+        cantonList.innerHTML = '<p class="px-4 py-2">Loading...</p>';
+
+        // Make the AJAX request to fetch cantons
+        fetch(`/api/cantons/${provinceId}`)
             .then((response) => response.json())
             .then((data) => {
+                cantonList.innerHTML = ""; // Clear content
                 data.forEach((canton) => {
-                    const option = document.createElement("option");
-                    option.value = canton.id;
-                    option.textContent = canton.nombre;
-                    cantonSelect.appendChild(option);
+                    const button = document.createElement("button");
+                    button.className =
+                        "w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-indigo-500";
+                    button.type = "button";
+                    button.innerText = canton.name;
+                    button.onclick = () => {
+                        cantonDropdown.querySelector("div").innerText =
+                            canton.name;
+                    };
+                    cantonList.appendChild(button);
                 });
             })
-            .catch((error) => console.error("Error fetching cantones:", error));
-    }
+            .catch(() => {
+                cantonList.innerHTML =
+                    '<p class="px-4 py-2 text-red-500">Error loading cantons</p>';
+            });
+    };
 });
