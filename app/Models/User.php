@@ -55,7 +55,6 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'birth_date' => 'date',
             'average_rating' => 'decimal:2',
-            'blocked_for_review' => 'boolean',
             'password' => 'hashed',
         ];
     }

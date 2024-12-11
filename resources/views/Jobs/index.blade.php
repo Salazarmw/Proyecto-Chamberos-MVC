@@ -67,7 +67,7 @@
                                 <td class="border border-gray-300 dark:border-gray-700 px-4 py-2">
                                     @if ($job->status === 'in_progress')
                                         <div class="flex gap-2">
-                                            @if (Auth::user()->user_type === 'client' && $job->client_ok !== 'success')
+                                            @if (Auth::user()->user_type === 'client' && $job->client_ok !== 'success' && $job->chambero_ok == 'success')
                                                 <button onclick="handleJobAction('success', {{ $job->id }})"
                                                     class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">
                                                     Terminar
@@ -119,7 +119,7 @@
                 });
 
                 if (response.ok) {
-                    location.reload();
+                    window.location.href = `/reviews/create/${jobId}`; // Redirect to reviews creation page
                 } else {
                     alert('Ocurrió un error. Intente nuevamente.');
                 }

@@ -26,7 +26,7 @@ return new class extends Migration
             $table->enum('user_type', ['client', 'chambero', 'admin'])->default('client');
             $table->decimal('average_rating', 3, 2)->default(0.0);
             $table->integer('rating_count')->default(0);
-            $table->boolean('blocked_for_review')->default(false); // Block due to pending review
+            $table->integer('blocked_for_review')->nullable(); // Block due to pending review
             $table->rememberToken();
             $table->timestamps();
         });

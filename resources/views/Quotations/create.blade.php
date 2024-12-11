@@ -4,8 +4,8 @@
     <div class="container mx-auto flex justify-center">
         <div class="w-full max-w-md bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
             <div class="flex items-center gap-4 mb-6">
-                <img src="{{ Storage::url($chambero->profile_photo) }}" alt="{{ __('Profile Photo') }}"
-                    class="w-16 h-16 rounded-full object-cover">
+                <img src="{{ Storage::url($chambero->profile_photo ?? 'profile-photos/DefaultImage.jpeg') }}"
+                    alt="{{ __('Profile Photo') }}" class="w-16 h-16 rounded-full object-cover">
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">{{ $chambero->name }}</h2>
                     <p class="text-sm text-gray-600 dark:text-gray-400">{{ $chambero->email }}</p>
@@ -71,6 +71,6 @@
     function formatMoney(input) {
         let value = input.value.replace(/[^0-9]/g, ''); // Only numbers
         value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // make big numbers have a ","
-        input.value = value; 
+        input.value = value;
     }
 </script>

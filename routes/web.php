@@ -32,7 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/reviews/{user}', [ReviewController::class, 'index']);
-    Route::get('/quotations', [quotationController::class, 'index'])->middleware(['auth', 'verified'])->name('quotations');
+    Route::get('/quotations', [quotationController::class, 'index'])->name('quotations');
     Route::get('/quotations/create/{chamberoId}', [quotationController::class, 'create'])->name('quotations.create');
     Route::post('/quotations', [QuotationController::class, 'store'])->name('quotations.store');
     Route::post('/quotations/{id}/accept', [QuotationController::class, 'accept'])->name('quotations.accept');
@@ -44,6 +44,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('quotations.counteroffer.view');
     Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
     Route::post('/jobs/{id}/update', [JobController::class, 'updateJobStatus']);
+    Route::get('/reviews/create/{job}', [ReviewController::class, 'create']);
+    Route::post('/reviews/store', [ReviewController::class, 'store'])->name('reviews.store');
 });
 
 Route::get('/reviews/{user}', [ReviewController::class, 'index']);
