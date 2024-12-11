@@ -67,6 +67,7 @@ class quotationController extends Controller
 
             return redirect()->route('dashboard')->with('success', 'Cotización enviada correctamente');
 
+
         } catch (\Exception $e) {
 
             Log::error('Error al guardar la cotización: ' . $e->getMessage());
