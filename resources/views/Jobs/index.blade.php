@@ -9,7 +9,7 @@
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Trabajos</h1>
 
         <div class="flex gap-6">
-            <!-- Filtros -->
+            <!-- Filters -->
             <div class="w-1/4 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
                 <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Filtrar trabajos</h2>
                 <form method="GET" action="{{ route('jobs') }}" class="space-y-4">
@@ -38,7 +38,7 @@
                 </form>
             </div>
 
-            <!-- Tabla de trabajos -->
+            <!-- Jobs table -->
             <div class="w-3/4 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
                 <table class="table-auto w-full border-collapse border border-gray-300 dark:border-gray-700">
                     <thead>

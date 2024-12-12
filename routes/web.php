@@ -50,8 +50,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('/reviews/{user}', [ReviewController::class, 'index']);
 
-Route::get('/api/cantons/{provinceId}', function ($provinceId) {
-    return Canton::where('province_id', $provinceId)->get(['id', 'name']);
-});
 
 require __DIR__ . '/auth.php';
