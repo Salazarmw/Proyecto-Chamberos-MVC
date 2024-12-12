@@ -36,18 +36,12 @@
 
         <!-- Province -->
         <div class="mt-4">
-            <x-input-label for="province" :value="__('Province')" />
-            <x-text-input id="province" class="block mt-1 w-full" type="text" name="province" :value="old('province')"
-                required autocomplete="province" />
-            <x-input-error :messages="$errors->get('province')" class="mt-2" />
+            <x-dropdown id="province" name="province" label="Province" :options="$provinces" required />
         </div>
 
         <!-- Canton -->
         <div class="mt-4">
-            <x-input-label for="canton" :value="__('Canton')" />
-            <x-text-input id="canton" class="block mt-1 w-full" type="text" name="canton" :value="old('canton')"
-                required autocomplete="canton" />
-            <x-input-error :messages="$errors->get('canton')" class="mt-2" />
+            <x-dropdown id="canton" name="canton" label="Canton" :options="[]" required />
         </div>
 
         <!-- Address -->
@@ -62,7 +56,7 @@
         <div class="mt-4">
             <x-input-label for="birth_date" :value="__('Birth Date')" />
             <x-date-input id="birth_date" class="block mt-1 w-full" name="birth_date"
-                value="{{ now()->subYears(18)->format('Y-m-d') }}" required />
+                value="{{ now()->subYears(19)->format('Y-m-d') }}" required />
             <x-input-error :messages="$errors->get('birth_date')" class="mt-2" />
         </div>
 
@@ -102,3 +96,30 @@
         </div>
     </form>
 </x-guest-layout>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#province').change(function() {
+            var provinceId = $(this).val();
+            if (provinceId) {
+                $.ajax({
+                    url: '/get-cantons/' + provinceId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#canton').empty();
+                        $('#canton').append('<option value="">Select a canton</option>');
+                        $.each(data, function(key, value) {
+                            $('#canton').append('<option value="' + value.id +
+                                '">' + value.name + '</option>');
+                        });
+                    }
+                });
+            } else {
+                $('#canton').empty();
+                $('#canton').append('<option value="">Select a canton</option>');
+            }
+        });
+    });
+</script>

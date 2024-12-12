@@ -17,8 +17,7 @@ class ChamberoProfileController extends Controller
     public function index()
     {
         // Get all provinces
-        //$provinces = Province::with('cantons')->get();
-
+        $provinces = Province::with('cantons')->get();
 
         // Get all chamberos
         $users = User::where('user_type', 'chambero')->get();
@@ -27,6 +26,6 @@ class ChamberoProfileController extends Controller
         $tags = Tag::all();
 
 
-        return view('dashboard', compact('users', 'tags'));
+        return view('dashboard', compact('users', 'tags', 'provinces'));
     }
 }

@@ -19,7 +19,6 @@ class CheckReviewPending
     {
         if (Auth::check()) {
             $user = Auth::user();
-            
             if ($user->blocked_for_review) {
                 return redirect()->route('reviews.create', ['job' => $user->blocked_for_review]);
             }
