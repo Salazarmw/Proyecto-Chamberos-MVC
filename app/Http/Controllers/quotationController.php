@@ -12,18 +12,24 @@ use Illuminate\Support\Facades\Auth;
 
 class quotationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $user = Auth::user(); 
+        $user = Auth::user();
+        $filters = $request->input('filter', []); // Obtener los filtros seleccionados
         $quotations = [];
 
         if ($user->user_type === 'client') {
-
-            $quotations = Quotation::where('client_id', $user->id)->get();
+            $query = Quotation::where('client_id', $user->id);
         } elseif ($user->user_type === 'chambero') {
-
-            $quotations = Quotation::where('chambero_id', $user->id)->get();
+            $query = Quotation::where('chambero_id', $user->id);
         }
+
+        // Aplicar filtros si hay alguno seleccionado
+        if (!empty($filters)) {
+            $query->whereIn('status', $filters);
+        }
+
+        $quotations = $query->get();
 
         return view('quotations.index', compact('quotations'));
     }
@@ -47,7 +53,7 @@ class quotationController extends Controller
             'chambero_id' => 'required|exists:users,id',
             'service_description' => 'required|string|max:1000',
             'scheduled_date' => 'required|date|after_or_equal:today',
-            'price' => 'required|string', 
+            'price' => 'required|string',
         ]);
 
         try {
@@ -88,9 +94,9 @@ class quotationController extends Controller
 
 
         $job = new Job();
-        $job->quotation_id = $quotation->id;  
-        $job->status = 'in_progress';  
-        $job->save();  
+        $job->quotation_id = $quotation->id;
+        $job->status = 'in_progress';
+        $job->save();
 
         return response()->json(['message' => 'Cotización aceptada y Job creado con éxito.']);
     }
@@ -98,7 +104,7 @@ class quotationController extends Controller
     public function reject($id)
     {
         $quotation = Quotation::findOrFail($id);
-        $quotation->status = 'rejected'; 
+        $quotation->status = 'rejected';
         $quotation->save();
 
         return response()->json(['message' => 'Cotización rechazada con éxito.']);
