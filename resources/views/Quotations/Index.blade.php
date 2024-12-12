@@ -6,34 +6,41 @@
     <div class="container mx-auto p-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Cotizaciones</h1>
         <div class="flex gap-6">
-            <!-- Filtros -->
+            <!-- Filters container -->
             <div class="w-1/4 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Filtros</h2>
-                <form id="filters-form">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Filtrar Cotizaciones</h2>
+                <form id="filters-form" method="GET" action="{{ route('quotations') }}">
                     <div class="mb-4">
-                        <input type="checkbox" id="filter1" name="filter1"
-                            class="form-checkbox h-5 w-5 text-indigo-600 dark:text-indigo-400">
+                        <input type="checkbox" id="filter1" name="filter[]" value="pending"
+                            class="form-checkbox h-5 w-5 text-indigo-600 dark:text-indigo-400"
+                            {{ in_array('pending', request()->input('filter', [])) ? 'checked' : '' }}>
                         <label for="filter1" class="ml-2 text-gray-700 dark:text-gray-300">Pendientes</label>
                     </div>
                     <div class="mb-4">
-                        <input type="checkbox" id="filter4" name="filter4"
-                            class="form-checkbox h-5 w-5 text-indigo-600 dark:text-indigo-400">
+                        <input type="checkbox" id="filter4" name="filter[]" value="offer"
+                            class="form-checkbox h-5 w-5 text-indigo-600 dark:text-indigo-400"
+                            {{ in_array('offer', request()->input('filter', [])) ? 'checked' : '' }}>
                         <label for="filter4" class="ml-2 text-gray-700 dark:text-gray-300">Contraofertas</label>
                     </div>
                     <div class="mb-4">
-                        <input type="checkbox" id="filter2" name="filter2"
-                            class="form-checkbox h-5 w-5 text-indigo-600 dark:text-indigo-400">
+                        <input type="checkbox" id="filter2" name="filter[]" value="accepted"
+                            class="form-checkbox h-5 w-5 text-indigo-600 dark:text-indigo-400"
+                            {{ in_array('accepted', request()->input('filter', [])) ? 'checked' : '' }}>
                         <label for="filter2" class="ml-2 text-gray-700 dark:text-gray-300">Aceptadas</label>
                     </div>
                     <div class="mb-4">
-                        <input type="checkbox" id="filter3" name="filter3"
-                            class="form-checkbox h-5 w-5 text-indigo-600 dark:text-indigo-400">
+                        <input type="checkbox" id="filter3" name="filter[]" value="rejected"
+                            class="form-checkbox h-5 w-5 text-indigo-600 dark:text-indigo-400"
+                            {{ in_array('rejected', request()->input('filter', [])) ? 'checked' : '' }}>
                         <label for="filter3" class="ml-2 text-gray-700 dark:text-gray-300">Rechazadas</label>
                     </div>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        Aplicar Filtros
+                    </button>
                 </form>
             </div>
 
-            <!-- Tabla de Cotizaciones -->
+            <!-- Quotations table -->
             <div class="w-3/4 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
                 <table class="table-auto w-full border-collapse border border-gray-300 dark:border-gray-700">
                     <thead>
@@ -109,30 +116,29 @@
 
     <script>
         async function handleAction(action, quotationId) {
-    if (action === 'counteroffer') {
-        // Redirect to the counteroffer page instead of using fetch
-        window.location.href = `/quotations/${quotationId}/counteroffer`;
-        return;
-    }
+            if (action === 'counteroffer') {
+                window.location.href = `/quotations/${quotationId}/counteroffer`;
+                return;
+            }
 
-    try {
-        const response = await fetch(`/quotations/${quotationId}/${action}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            },
-        });
+            try {
+                const response = await fetch(`/quotations/${quotationId}/${action}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                });
 
-        if (response.ok) {
-            location.reload();
-        } else {
-            alert('Ocurrió un error. Intente nuevamente.');
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Ocurrió un error. Intente nuevamente.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error de red. Verifique su conexión.');
+            }
         }
-    } catch (error) {
-        console.error(error);
-        alert('Error de red. Verifique su conexión.');
-    }
-}
     </script>
 @endsection

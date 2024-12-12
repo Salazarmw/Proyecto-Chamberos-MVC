@@ -9,7 +9,7 @@
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Trabajos</h1>
 
         <div class="flex gap-6">
-            <!-- Filtros -->
+            <!-- Filters -->
             <div class="w-1/4 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
                 <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Filtrar trabajos</h2>
                 <form method="GET" action="{{ route('jobs') }}" class="space-y-4">
@@ -38,7 +38,7 @@
                 </form>
             </div>
 
-            <!-- Tabla de trabajos -->
+            <!-- Jobs table -->
             <div class="w-3/4 bg-white dark:bg-gray-800 shadow rounded-lg p-6">
                 <table class="table-auto w-full border-collapse border border-gray-300 dark:border-gray-700">
                     <thead>
@@ -67,7 +67,7 @@
                                 <td class="border border-gray-300 dark:border-gray-700 px-4 py-2">
                                     @if ($job->status === 'in_progress')
                                         <div class="flex gap-2">
-                                            @if (Auth::user()->user_type === 'client' && $job->client_ok !== 'success' && $job->chambero_ok == 'success')
+                                            @if (Auth::user()->user_type === 'client' && $job->client_ok !== 'success')
                                                 <button onclick="handleJobAction('success', {{ $job->id }})"
                                                     class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded">
                                                     Terminar
@@ -119,7 +119,7 @@
                 });
 
                 if (response.ok) {
-                    window.location.href = `/reviews/create/${jobId}`; // Redirect to reviews creation page
+                    location.reload();
                 } else {
                     alert('Ocurrió un error. Intente nuevamente.');
                 }
