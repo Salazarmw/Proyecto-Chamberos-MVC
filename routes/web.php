@@ -23,7 +23,7 @@ Route::get('/', function () {
 
 Route::resource('chambero_profiles', ChamberoProfileController::class);
 
-Route::get('/cantones/{province}', [LocationController::class, 'getCantones']);
+Route::get('/get-cantons/{province}', [LocationController::class, 'getCantons']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [ChamberoProfileController::class, 'index'])->name('dashboard');

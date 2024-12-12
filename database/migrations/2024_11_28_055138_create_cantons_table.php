@@ -13,11 +13,9 @@ return new class extends Migration
     {
         Schema::create('cantons', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('province_id');
+            $table->foreignId('province_id')->constrained('provinces')->onDelete('cascade');
             $table->string('name');
             $table->timestamps();
-
-            $table->foreign('province_id')->references('id')->on('provinces')->onDelete('cascade');
         });
     }
 

@@ -13,10 +13,9 @@ class LocationController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getCantons(Request $request)
+    public function getCantons($provinceId)
     {
-       //Acá va el update de los dropdowns para los cantones :c
-        //$cantons = Canton::where('province_id', $provinceId)->get();
-        //return response()->json($cantons);
+        $cantons = Canton::where('province_id', $provinceId)->get();
+        return response()->json($cantons);
     }
 }

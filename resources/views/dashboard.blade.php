@@ -6,34 +6,14 @@
         <div class="w-1/4 p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md h-full">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Filtros</h2>
 
-            <!-- Provinces -->
-            <div class="mb-4">
-                <label for="provinceDropdown" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">
-                    Selecciona una provincia
-                </label>
-                <select id="provinceDropdown"
-                    class="block w-full p-2.5 bg-white border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring focus:ring-indigo-300 dark:focus:ring-indigo-700">
-                    <option value="">Selecciona una provincia</option>
-                    <option value="1">San José</option>
-                    <option value="2">Alajuela</option>
-                    <option value="3">Cartago</option>
-                    <option value="4">Heredia</option>
-                </select>
+            <!-- Province -->
+            <div class="mt-4">
+                <x-dropdown-register id="province" name="province" label="Province" :options="$provinces" required />
             </div>
 
-            <!-- Cantons -->
-            <div class="mb-4">
-                <label for="cantonDropdown" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">
-                    Selecciona un cantón
-                </label>
-                <select id="cantonDropdown"
-                    class="block w-full p-2.5 bg-white border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring focus:ring-indigo-300 dark:focus:ring-indigo-700">
-                    <option value="">Selecciona un cantón</option>
-                    <option value="1">Cantón 1</option>
-                    <option value="2">Cantón 2</option>
-                    <option value="3">Cantón 3</option>
-                    <option value="4">Cantón 4</option>
-                </select>
+            <!-- Canton -->
+            <div class="mt-4">
+                <x-dropdown-register id="canton" name="canton" label="Canton" :options="[]" required />
             </div>
 
             <!-- Tags search bar -->
@@ -101,5 +81,32 @@
                 });
             });
         }
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#province').change(function() {
+            var provinceId = $(this).val();
+            if (provinceId) {
+                $.ajax({
+                    url: '/get-cantons/' + provinceId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#canton').empty();
+                        $('#canton').append('<option value="">Select a canton</option>');
+                        $.each(data, function(key, value) {
+                            $('#canton').append('<option value="' + value.id +
+                                '">' + value.name + '</option>');
+                        });
+                    }
+                });
+            } else {
+                $('#canton').empty();
+                $('#canton').append('<option value="">Select a canton</option>');
+            }
+        });
     });
 </script>

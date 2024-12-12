@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Canton;
 use App\Models\ChamberoProfile;
 use App\Models\Province;
 use App\Models\Tag;
@@ -39,7 +40,7 @@ class RegisteredUserController extends Controller
         // Get all provinces and tags from the database
         $provinces = Province::all();
         $tags = Tag::all()->toArray();
-        return view('auth.chambero-register', compact('tags'));
+        return view('auth.chambero-register', compact('tags', 'provinces'));
     }
 
     /**
@@ -54,15 +55,39 @@ class RegisteredUserController extends Controller
             'lastname' => 'required|string|max:100',
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'phone' => 'required|string|max:20',
-            'province' => 'required|string|max:100',
-            'canton' => 'required|string|max:100',
+            'province' => 'required|exists:provinces,id',
+            'canton' => 'required|exists:cantons,id',
             'address' => 'required|string',
             'birth_date' => [
                 'required',
                 'date',
                 function ($attribute, $value, $fail) {
-                    if ($value && now()->diffInYears($value) > 18) {
-                        return $fail('Debes ser mayor de 18 años.');
+                    if ($value) {
+                        try {
+                            // Asegúrate de establecer la zona horaria correcta
+                            $date = \Carbon\Carbon::createFromFormat('Y-m-d', $value, config('app.timezone'));
+                            $now = now();
+
+                            Log::info('Fecha de nacimiento:', [$value]);
+                            Log::info('Fecha actual:', [$now->format('Y-m-d')]);
+                            Log::info('Fecha parseada:', [$date->format('Y-m-d')]);
+
+                            // Verificar si la fecha es futura
+                            if ($date->isFuture()) {
+                                return $fail('La fecha de nacimiento no puede ser en el futuro.');
+                            }
+
+                            $age = floor(abs($now->diffInYears($date)));
+
+                            Log::info('Diferencia en años:', ['age' => $age]);
+
+                            if ($age < 18) {
+                                return $fail('Debes ser mayor de 18 años.');
+                            }
+                        } catch (\Exception $e) {
+                            Log::error('Error parsing birth date:', ['error' => $e->getMessage(), 'value' => $value]);
+                            return $fail('Formato de fecha inválido.');
+                        }
                     }
                 },
             ],
@@ -76,8 +101,8 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone' => $request->phone,
-            'province' => $request->province,
-            'canton' => $request->canton,
+            'province' => Province::find($request->province)->name,
+            'canton' => Canton::find($request->canton)->name,
             'address' => $request->address,
             'birth_date' => $request->birth_date
         ]);
@@ -95,15 +120,39 @@ class RegisteredUserController extends Controller
             'lastname' => 'required|string|max:100',
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'phone' => 'required|string|max:20',
-            'province' => 'required|string|max:100',
-            'canton' => 'required|string|max:100',
+            'province' => 'required|exists:provinces,id',
+            'canton' => 'required|exists:cantons,id',
             'address' => 'required|string',
             'birth_date' => [
                 'required',
                 'date',
                 function ($attribute, $value, $fail) {
-                    if ($value && now()->diffInYears($value) > 18) {
-                        return $fail('Debes ser mayor de 18 años.');
+                    if ($value) {
+                        try {
+                            // Asegúrate de establecer la zona horaria correcta
+                            $date = \Carbon\Carbon::createFromFormat('Y-m-d', $value, config('app.timezone'));
+                            $now = now();
+
+                            Log::info('Fecha de nacimiento:', [$value]);
+                            Log::info('Fecha actual:', [$now->format('Y-m-d')]);
+                            Log::info('Fecha parseada:', [$date->format('Y-m-d')]);
+
+                            // Verificar si la fecha es futura
+                            if ($date->isFuture()) {
+                                return $fail('La fecha de nacimiento no puede ser en el futuro.');
+                            }
+
+                            $age = floor(abs($now->diffInYears($date)));
+
+                            Log::info('Diferencia en años:', ['age' => $age]);
+
+                            if ($age < 18) {
+                                return $fail('Debes ser mayor de 18 años.');
+                            }
+                        } catch (\Exception $e) {
+                            Log::error('Error parsing birth date:', ['error' => $e->getMessage(), 'value' => $value]);
+                            return $fail('Formato de fecha inválido.');
+                        }
                     }
                 },
             ],
@@ -122,8 +171,8 @@ class RegisteredUserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'phone' => $request->phone,
-                'province' => $request->province,
-                'canton' => $request->canton,
+                'province' => Province::find($request->province)->name,
+                'canton' => Canton::find($request->canton)->name,
                 'address' => $request->address,
                 'birth_date' => $request->birth_date,
                 'user_type' => 'chambero'
@@ -153,13 +202,8 @@ class RegisteredUserController extends Controller
             // Redirect with success message
             return redirect()->route('login')->with('success', __('Registration successful!'));
         } catch (\Exception $e) {
-            // Rollback transaction on error
             DB::rollBack();
-
-            // Log error
             Log::error('Chambero registration failed: ' . $e->getMessage());
-
-            // Redirect back with error message
             return redirect()->back()->withErrors(__('An error occurred during registration. Please try again.'));
         }
     }
